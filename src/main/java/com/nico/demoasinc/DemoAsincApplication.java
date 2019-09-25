@@ -1,5 +1,6 @@
 package com.nico.demoasinc;
 
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -36,6 +37,7 @@ public class DemoAsincApplication implements CommandLineRunner {
 		integerList.add(5000);
 		integerList.add(5000);
 		integerList.add(11000);
+		integerList.add(15000);
 
 		System.out.println("inicio");
 		List<CompletableFuture> completableFutureList = integerList
@@ -53,10 +55,20 @@ public class DemoAsincApplication implements CommandLineRunner {
 		//});
 
 
+
+
 		System.out.println("antes obtencion");
 		List<Object> collect = voidCompletableFuture.thenApply(x -> {
-			return completableFutureList.stream().map(y -> y.join()).collect(Collectors.toList());
+			System.out.println("antes de join");
+			return completableFutureList.stream().map(y -> y.exceptionally((ex) -> {
+
+				//throw new RuntimeException("execption cuando hay error en llamada a servicio");
+				return null;
+
+			}).join()).collect(Collectors.toList());
 		}).get();
+
+
 
 
 		//System.out.println("antes obtencion");
@@ -82,4 +94,13 @@ public class DemoAsincApplication implements CommandLineRunner {
 
 
 	}
+
+	public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+		return new CustomAsyncExceptionHandler();
+	}
+
+	public int handleError(Throwable throwable){
+		return  10;
+	}
+
 }

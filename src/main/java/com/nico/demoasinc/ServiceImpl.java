@@ -17,6 +17,13 @@ public class ServiceImpl {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        CompletableFuture.completedFuture("MederuQ: " + aaa);
+
+        if(aaa==11000){
+            throw new RuntimeException("ex a 11 seg");
+        }
+
         System.out.println("MederuQ: " + aaa);
         return CompletableFuture.completedFuture("MederuQ: " + aaa);
     }
